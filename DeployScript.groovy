@@ -1,10 +1,7 @@
 /* 
  * A DeployScript.groovy allows you to automate the deployment of geOrchestra webapps into tomcat, from the command line.
  * 
- * The current one targets a single host, reachable at @shared.server.name@, hosting three tomcat instances:
- *  - one for the proxy (ROOT) and cas webapps
- *  - one for the geoserver webapp
- *  - an other one for the remaining webapps (analytics, extractorapp, geonetwork, header, ldapadmin, mapfishapp, geofence)
+ * The current one targets a single host, reachable at @shared.server.name@, hosting a single tomcat instance with the proxy (ROOT), cas, header and ldapadmin webapps
  *
  * It is provided as an example, and **should** be adapted to match your local setup. 
  * The server-deploy-support module provides all the classes required to create your own deployment script.
@@ -70,7 +67,7 @@ For the record, here is a typical settings.xml file:
 </settings>
 */
 
-// Deploy all geOrchestra webapps except proxy, cas and geoserver:
+// Deploy all geOrchestra webapps:
 def server1Deployer = new SSHWarDeployer(
     log: log,
     ssh: ssh,
@@ -80,25 +77,4 @@ def server1Deployer = new SSHWarDeployer(
     stopServerCommand: "sudo /etc/init.d/tomcat-georchestra stop"
 )
 // Note that the deploy_user should have the rights to restart tomcat instances !
-server1Deployer.deploy(artifacts.findAll{ it.name.contains("analytics") || it.name.contains("extractorapp") || it.name.contains("geonetwork") || it.name.contains("header") || it.name.contains("ldapadmin") || it.name.contains("mapfishapp") || it.name.contains("geofence") })
-
-// Deploy proxy and cas to their own tomcat instance:
-def proxycasDeployer = server1Deployer.copy(
-    webappDir: "/srv/tomcat/proxycas/webapps",
-    startServerCommand: "sudo /etc/init.d/tomcat-proxycas start",
-    stopServerCommand: "sudo /etc/init.d/tomcat-proxycas stop"
-)
-proxycasDeployer.deploy(artifacts.findAll{it.name.contains("ROOT") || it.name.contains("cas")})
-
-// Deploy geoserver to it's own tomcat instance:
-def geoserverArtifact = artifacts.find{it.name.startsWith("geoserver")}
-if (geoserverArtifact != null) {
-  def geoserverDeployer = server1Deployer.copy(
-    webappDir: "/srv/tomcat/geoserver/webapps",
-    startServerCommand: "sudo /etc/init.d/tomcat-geoserver start",
-    stopServerCommand: "sudo /etc/init.d/tomcat-geoserver stop"
-  )
-  geoserverDeployer.deploy(geoserverArtifact)
-}
-
-
+server1Deployer.deploy(artifacts.findAll{ it.name.contains("ROOT") || it.name.contains("cas") || it.name.contains("header") || it.name.contains("ldapadmin") })

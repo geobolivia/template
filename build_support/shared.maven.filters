@@ -52,12 +52,6 @@ shared.language=en
 shared.header.height=90
 
 # --------------------------------------------------
-# GEONETWORK
-# --------------------------------------------------
-
-shared.geonetwork.language=eng
-
-# --------------------------------------------------
 # LDAP
 # --------------------------------------------------
 
@@ -84,19 +78,6 @@ shared.ldap.userSearchBaseDN=ou=users
 shared.ldap.groupSearchBaseDN=ou=groups
 shared.ldap.admin.dn=cn=admin,@shared.ldap.baseDn@
 shared.ldap.admin.password=secret
-
-
-# --------------------------------------------------
-# GEOSERVER
-# --------------------------------------------------
-
-# geOrchestra uses a privileged account to query geoserver
-# with full admin privileges.This user MUST exist in the ldap
-# directory and MUST belong to the ADMINISTRATOR group.
-
-shared.privileged.geoserver.user=geoserver_privileged_user
-shared.privileged.geoserver.pass=gerlsSnFd6SmM
-
 
 # --------------------------------------------------
 # SMTP / Emails
@@ -157,24 +138,6 @@ shared.psql.host=localhost
 shared.psql.port=5432
 shared.psql.user=www-data
 shared.psql.pass=www-data
-
-
-# --------------------------------------------------
-# DOWNLOAD FORM
-# --------------------------------------------------
-
-# If the downloadform feature is activated,
-# users will be asked to fill a form, read and accept an agreement
-# (shared.download_form.pdfurl) prior to any download.
-# The downloadform will log every download request in a database,
-# see downloadform/database.sql
-# + example +
-# shared.download_form.pdfurl=/_static/usage.pdf
-# or
-# shared.download_form.pdfurl=//url.to/cgu.pdf
-
-shared.download_form.activated=false
-shared.download_form.pdfurl=
 
 
 # --------------------------------------------------

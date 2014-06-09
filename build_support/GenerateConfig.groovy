@@ -33,131 +33,9 @@ class GenerateConfig {
       def target, def subTarget, def targetDir,
       def buildSupportDir, def outputDir) {
 
-        installGeoServerExtensions()
-        updateGeoServerProperties()
-        updateGeoFenceProperties()
-        updateMapfishappMavenFilters()
-        updateExtractorappMavenFilters()
         updateSecProxyMavenFilters()
         updateLDAPadminMavenFilters()
     }
-
-    /**
-     * installGeoServerExtensions
-     */
-    def installGeoServerExtensions() {
-        def gsVersion = System.getProperty('geoserver.version', '2.3.2')
-        def gtVersion = System.getProperty("geotools.version", '9.2')
-
-        new MavenDownloader(
-            to: 'geoserver-webapp/WEB-INF/lib',
-            artifacts: [
-                /*
-                 * The INSPIRE extension allows GeoServer to be compliant with the View Service specification 
-                 * put forth by the Infrastructure for Spatial Information in the European Community (INSPIRE) directive.
-                 * Please refer to http://docs.geoserver.org/stable/en/user/extensions/inspire/index.html
-                 * Activated by default for geOrchestra.
-                 */
-                ['org.geoserver.extension','inspire', gsVersion]
-
-                /*
-                 * The control-flow module allows the administrator to control the amount of concurrent requests 
-                 * actually executing inside the server.
-                 * Please refer to http://docs.geoserver.org/stable/en/user/extensions/controlflow/index.html
-                 * Activated by default for geOrchestra.
-                 */
-                ,['org.geoserver.extension','control-flow', gsVersion]
-
-                /*
-                 * GeoServer can leverage the ImageI/O-Ext GDAL libraries to read selected coverage formats.
-                 * Please refer to http://docs.geoserver.org/stable/en/user/data/raster/gdal.html
-                 * Not activated by default since it requires the GDAL native libraries
-                 *
-                ,['org.geoserver.extension','gdal', gsVersion]
-                */
-
-                /*
-                 * SpatiaLite is the spatial extension of the popular SQLite embedded relational database.
-                 * Please refer to http://docs.geoserver.org/stable/en/user/community/spatialite/index.html
-                 * Not activated by default since it requires native libraries
-                 *
-                ,['org.geotools.jdbc','gt-jdbc-spatialite', gtVersion]
-                ,['org.xerial', 'sqlite-jdbc-spatialite', '3.7.2-2.4']
-                */
-            ]
-        ).download()
-    }
-
-
-    /**
-     * updateMapfishappMavenFilters
-     */
-    def updateMapfishappMavenFilters() {
-        new PropertyUpdate(
-            path: 'maven.filter',
-            from: 'defaults/mapfishapp', 
-            to: 'mapfishapp'
-        ).update { properties ->
-            // this is the directory where older temporary documents are stored:
-            properties['docTempDir'] = "/tmp/mapfishapp"
-        }
-    }
-
-
-    /**
-     * updateGeoServerProperties
-     */
-    def updateGeoServerProperties() {
-        new PropertyUpdate(
-            path: 'geofence-geoserver.properties',
-            from: 'defaults/geoserver-webapp/WEB-INF/classes',
-            to: 'geoserver-webapp/WEB-INF/classes'
-        ).update { properties ->
-            // if you're running GeoFence, update the following URL to match your setup:
-            properties['servicesUrl'] = "http://localhost:8080/geofence-private/remoting/RuleReader"
-        }
-    }
-
-
-    /**
-     * updateGeoServerProperties
-     */
-    def updateGeoFenceProperties() {
-        new PropertyUpdate(
-            path: 'geofence-datasource-ovr.properties',
-            from: 'defaults/geofence-webapp/WEB-INF/classes',
-            to: 'geofence-webapp/WEB-INF/classes'
-        ).update { properties ->
-            properties['geofenceGlobalConfiguration.baseLayerURL'] = "http://demo1.geo-solutions.it/geoserver-enterprise/wms"
-            properties['geofenceGlobalConfiguration.baseLayerName'] = "GeoSolutions:ne_shaded"
-            properties['geofenceGlobalConfiguration.baseLayerTitle'] = "GeoSolutions Natural Earth"
-            properties['geofenceGlobalConfiguration.baseLayerFormat'] = "image/jpeg"
-            properties['geofenceGlobalConfiguration.baseLayerStyle'] = ""
-            properties['geofenceGlobalConfiguration.mapCenterLon'] = "0.10626"
-            properties['geofenceGlobalConfiguration.mapCenterLat'] = "44.35909"
-            properties['geofenceGlobalConfiguration.mapZoom'] = "6"
-        }
-    }
-
-    /**
-     * updateExtractorappMavenFilters
-     */
-    def updateExtractorappMavenFilters() {
-        new PropertyUpdate(
-            path: 'maven.filter',
-            from: 'defaults/extractorapp', 
-            to: 'extractorapp'
-        ).update { properties ->
-            properties['maxCoverageExtractionSize'] = "99999999"
-            properties['maxExtractions'] = "5"
-            properties['remoteReproject'] = "true"
-            properties['useCommandLineGDAL'] = "false"
-            properties['extractionFolderPrefix'] = "extraction-"
-            properties['emailfactory'] = "org.georchestra.extractorapp.ws.EmailFactoryDefault"
-            properties['emailsubject'] = "["+instanceName+"] Your extraction request"
-        }
-    }
-
 
     /**
      * updateSecProxyMavenFilters
@@ -176,16 +54,8 @@ class GenerateConfig {
             properties['private.ssl'] = "8443"
             properties['proxy.defaultTarget'] = proxyDefaultTarget
             properties['proxy.mapping'] = """
-<entry key="analytics"     value="proxyDefaultTarget/analytics-private/" />
-<entry key="catalogapp"    value="proxyDefaultTarget/catalogapp-private/" />
-<entry key="downloadform"  value="proxyDefaultTarget/downloadform-private/" />
-<entry key="extractorapp"  value="proxyDefaultTarget/extractorapp-private/" />
-<entry key="geonetwork"    value="proxyDefaultTarget/geonetwork-private/" />
-<entry key="geoserver"     value="proxyDefaultTarget/geoserver-private/" />
-<entry key="geofence"      value="proxyDefaultTarget/geofence-private/" />
 <entry key="header"        value="proxyDefaultTarget/header-private/" />
 <entry key="ldapadmin"     value="proxyDefaultTarget/ldapadmin-private/" />
-<entry key="mapfishapp"    value="proxyDefaultTarget/mapfishapp-private/" />
 <entry key="static"        value="proxyDefaultTarget/header-private/" />""".replaceAll("\n|\t","").replaceAll("proxyDefaultTarget",proxyDefaultTarget)
             properties['header.mapping'] = """
 <entry key="sec-email"     value="mail" />
