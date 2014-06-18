@@ -35,6 +35,7 @@ class GenerateConfig {
 
         updateSecProxyMavenFilters()
         updateLDAPadminMavenFilters()
+        updateHeaderMavenFilters()
     }
 
     /**
@@ -104,6 +105,20 @@ class GenerateConfig {
             properties['generateUid'] = "true"
             // RegExp for uid field validation (by default: one letter, followed by letters, numbers or point)
             properties['uidRegExp'] = "[A-Za-z]+[A-Za-z0-9.]*"
+        }
+    }
+
+    /**
+     * updateHeaderMavenFilters
+     */
+    def updateHeaderMavenFilters() {
+        new PropertyUpdate(
+            path: 'maven.filter',
+            from: 'defaults/header',
+            to: 'header'
+        ).update { properties ->
+            // Ldapadmin application path as seen from the external world:
+            properties['ldapadminPublicContextPath'] = "/ldapadmin"
         }
     }
 
