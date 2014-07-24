@@ -33,9 +33,9 @@
       <div class="loading-indicator">Loading ...</div>
     </div>
     
-    <!-- see http://stackoverflow.com/questions/1037839/how-to-force-link-from-iframe-to-be-opened-in-the-parent-window -->
-    <script type="text/javascript" src="/header/js/header.js"></script>
-    <iframe src="/header/?active=geonetwork&lang=@shared.language@" style="width:100%;height:@shared.header.height@px;border:none;overflow:hidden;" scrolling="no" frameborder="0" onload="_headerOnLoad(this)"></iframe>
+    <link rel="stylesheet" type="text/css" href="/header/css/style.css" />
+    <script type="text/javascript" src="/header/?lang=@shared.language@"></script>
+    <script type="text/javascript" src="/header/js/header.js?active=geonetwork"></script>
 
     <div id="go_head" style="display:none;">
       <div id="title" class="mn-main"></div>
